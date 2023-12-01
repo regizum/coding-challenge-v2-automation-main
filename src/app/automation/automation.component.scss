@@ -1,0 +1,23 @@
+.automation {
+  &-panel {
+    position: fixed;
+    left: 300px;
+    right: 300px;
+    bottom: 0;
+    height: 250px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  &-overlay {
+    background-color: rgba(0, 0, 0, 0.3);
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    backdrop-filter: blur(10px);
+    z-index: 100;
+    display: none;
+  }
+}

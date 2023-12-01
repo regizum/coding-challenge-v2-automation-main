@@ -1,0 +1,12 @@
+.automation-overlay.in {
+    display: block !important;
+}
+
+.automation-panel {
+    z-index: 200;
+}
+
+.clicked {
+    position: relative !important;
+    z-index: 200 !important;
+}
