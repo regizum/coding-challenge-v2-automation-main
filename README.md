@@ -1,27 +1,77 @@
-# CodingChallengeV2
+# Coding Challenge V2
+### This is a coding challenge for a job interview
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.5.
+## 1. Usage
 
-## Development server
+### 1.1. Installation
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Run `npm install` to install all dependencies.
 
-## Code scaffolding
+### 1.2. Development
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng serve` to start the development server. The server will automatically reload if you change any of the source files.
 
-## Build
+### 1.3. Build
 
 Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-## Running unit tests
+### 1.4. Running unit tests
 
 Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-## Running end-to-end tests
+### 1.5. Further help
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README]
 
-## Further help
+## 2. Project Structure
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### 2.1. Overview
+
+The project is structured as follows:
+
+``` bash    
+├── src/                        # Source files
+│   ├── app/                    # Application files
+│   │   ├── automation/         # Automation app
+│   │   ├── todo-app/           # Todo app
+│   │   ├── app.component.*     # App component
+│   │   ├── app.module.ts       # App module
+│   ├── assets/                 # Assets
+│   ├── index.html              # Index file
+│   ├── main.ts                 # Main file
+│   └── styles.css              # Styles
+├── .editorconfig               # Editor config
+├── .gitignore                  # Git ignore
+├── angular.json                # Angular config
+├── package.json                # Package config
+├── README.md                   # Readme file
+├── tsconfig.app.json           # TypeScript config
+├── tsconfig.json               # TypeScript config
+└── tsconfig.spec.json          # TypeScript config
+```
+
+### 2.2. Automation App
+
+The automation app is an application that detects the list of items in the page and runs a bot to simulate button clicks and text inputs.
+
+### 2.3. Todo App
+
+Simple todo app that allows the user to add, edit and remove items from a list.
+
+## 3. Libraries
+
+### 3.1. Bootstrap
+
+Bootstrap is an open source toolkit for developing with HTML, CSS, and JS.
+
+### 3.2. Font Awesome
+
+Font Awesome is a font and icon toolkit based on CSS and LESS.
+
+## 4. Author
+
+Author: Regina Nigmatullina
+
+Email: nigmatullinaregina@gmail.com
+  
+
