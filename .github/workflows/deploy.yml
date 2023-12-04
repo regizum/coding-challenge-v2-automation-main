@@ -14,7 +14,7 @@ jobs:
           node-version: "18.x"
       - run: npm i
       - run: npm rebuild node-sass
-      - run: CI=false npm run build --baseHref=/coding-challenge-v2/
+      - run: CI=false ng build --baseHref=/coding-challenge-v2/
       - name: Deploy
         uses: crazy-max/ghaction-github-pages@v1
         with:
