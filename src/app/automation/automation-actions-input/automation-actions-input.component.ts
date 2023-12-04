@@ -1,80 +1,97 @@
 import {
   Component,
-  ViewEncapsulation,
   AfterViewInit,
+  OnDestroy,
   Input,
   Output,
   EventEmitter,
-} from "@angular/core";
+} from '@angular/core';
+import { AutomationService } from '../automation.service';
 
 @Component({
-  selector: "automation-actions-input",
-  templateUrl: "./automation-actions-input.component.html",
-  styleUrls: ["./automation-actions-input.component.css"],
-  encapsulation: ViewEncapsulation.None,
+  selector: 'automation-actions-input',
+  templateUrl: './automation-actions-input.component.html',
 })
-export class AutomationActionsInputComponent implements AfterViewInit {
+export class AutomationActionsInputComponent
+  implements AfterViewInit, OnDestroy {
   @Output('onReset') onResetApp = new EventEmitter();
   @Input() elementsList: HTMLElement[] = [];
 
   highlightedElements: HTMLElement[] = [];
   isChosen = false;
   isDone = false;
-  text = "";
+  text = '';
+  highlightedClassName: string = 'automation-element-highlighted';
+  clickedClassName: string = 'automation-element-clicked';
 
-  private getListOfElements = () => {
-    let result: HTMLElement[] = [];
-    let tagName = "input";
+  constructor(private automationService: AutomationService) {}
 
-    for (let i = 0; i < this.elementsList.length; i++) {
-      let input = this.elementsList[i].querySelector(
-        `${tagName.toLowerCase()}`
-      );
-      if (input) result.push(input as HTMLElement);
-      if (this.elementsList[i].tagName === tagName.toUpperCase()) {
-        result.push(this.elementsList[i] as HTMLElement);
-      }
-    }
-
-    return result;
-  };
-
-  private unHighlightElements(list: HTMLCollection | HTMLElement[]) {
-    for (let i = 0; i < list.length; i++) {
-      list[i].classList.remove("highlighted");
-    }
+  private addEventListeners() {
+    document.addEventListener('mouseover', this.mouseOverListener);
+    document.addEventListener('mousedown', this.mouseDownListener);
+    document.addEventListener('click', this.clickListener, true);
   }
 
-  private highlightList(list: HTMLCollection | HTMLElement[]) {
-    for (let i = 0; i < list.length; i++) {
-      list[i].classList.add("highlighted");
-    }
+  private removeEventListeners() {
+    document.removeEventListener('mouseover', this.mouseOverListener);
+    document.removeEventListener('mousedown', this.mouseDownListener);
+    document.removeEventListener('click', this.clickListener, true);
   }
 
   private mouseOverListener = (event: MouseEvent) => {
     let element = event.target as HTMLElement;
-    if (!element.closest(".clicked")) return;
+    if (
+      !element.closest('.automation-block-clicked') &&
+      !element.classList.contains('automation-block-clicked')
+    )
+      return;
 
-    let inputs = this.getListOfElements();
+    let inputs = this.automationService.getListOfElementsByTagName(
+      'input',
+      this.elementsList
+    );
+    console.log(this.highlightedElements);
 
-    this.unHighlightElements(this.highlightedElements);
+    this.automationService.removeClassNameFromList(
+      this.highlightedElements,
+      this.highlightedClassName
+    );
 
     this.highlightedElements = inputs;
-    this.highlightList(inputs);
+    this.automationService.addClassNameToList(
+      this.highlightedElements,
+      this.highlightedClassName
+    );
+  };
+
+  private mouseDownListener = (event: MouseEvent) => {
+    event.preventDefault();
   };
 
   private clickListener = (event: MouseEvent) => {
+    let element = event.target as HTMLElement;
+    if (element.closest('.automation')) return;
+
     event.preventDefault();
     event.stopImmediatePropagation();
     if (this.highlightedElements.length) this.isChosen = true;
-    document.removeEventListener("mouseover", this.mouseOverListener);
-    document.removeEventListener("click", this.clickListener, true);
+    this.automationService.removeClassNameFromList(
+      this.highlightedElements,
+      this.highlightedClassName
+    );
+    this.automationService.addClassNameToList(
+      this.highlightedElements,
+      this.clickedClassName
+    );
+    this.removeEventListeners();
   };
 
+  ngOnInit() {
+    this.automationService.showOverlay();
+  }
+
   ngAfterViewInit() {
-    document.querySelector(".automation-overlay")?.classList.add("in");
-    document.addEventListener("mouseover", this.mouseOverListener);
-    document.addEventListener("click", this.clickListener, true);
+    this.addEventListeners();
   }
 
   runBot() {
@@ -82,22 +99,28 @@ export class AutomationActionsInputComponent implements AfterViewInit {
       (this.highlightedElements[i] as HTMLInputElement).value = this.text;
     }
     this.isDone = true;
-    document.querySelector(".automation-overlay")?.classList.remove("in");
+    this.automationService.hideOverlay();
   }
 
   reset() {
     this.isChosen = false;
     this.isDone = false;
-    this.text = "";
-    this.unHighlightElements(this.highlightedElements);
+    this.text = '';
+    this.automationService.resetAction(
+      this.highlightedElements,
+      this.highlightedClassName,
+      this.clickedClassName
+    );
     this.highlightedElements = [];
-    document.querySelector(".automation-overlay")?.classList.add("in");
-    document.addEventListener("mouseover", this.mouseOverListener);
-    document.addEventListener("click", this.clickListener, true);
+    this.addEventListeners();
   }
 
   ngOnDestroy() {
-    document.removeEventListener("mouseover", this.mouseOverListener);
-    document.removeEventListener("click", this.clickListener, true);
+    this.automationService.resetAction(
+      this.highlightedElements,
+      this.highlightedClassName,
+      this.clickedClassName
+    );
+    this.removeEventListeners();
   }
 }

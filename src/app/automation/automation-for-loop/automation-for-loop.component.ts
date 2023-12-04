@@ -1,139 +1,62 @@
-import {
-  Component,
-  AfterViewInit,
-  ViewEncapsulation,
-  Output,
-  EventEmitter,
-} from "@angular/core";
+import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { AutomationService } from '../automation.service';
 
 @Component({
-  selector: "automation-for-loop",
-  templateUrl: "./automation-for-loop.component.html",
-  styleUrls: ["./automation-for-loop.component.scss"],
-  encapsulation: ViewEncapsulation.None,
+  selector: 'automation-for-loop',
+  templateUrl: './automation-for-loop.component.html',
 })
 export class AutomationForLoopComponent implements AfterViewInit {
   @Output() onSaveItems = new EventEmitter<HTMLElement[]>();
 
   highlightedElements: HTMLElement[] = [];
   clickedElements: HTMLElement[] = [];
-  parentNestings = 5;
+  highlightedClassName: string = 'automation-block-highlighted';
+  clickedClassName: string = 'automation-block-clicked';
 
-  private getPossibleList = (
-    element: HTMLElement,
-    childClassName: string,
-    className: string,
-    tagName: string
-  ): HTMLElement[] => {
-    const children = element.children;
-    let result: HTMLElement[] = [];
+  constructor(private automationService: AutomationService) {}
 
-    if (children.length < 2) {
-      return [];
-    }
-
-    for (let i = 0; i < children.length; i++) {
-      if (className) {
-        if (
-          children[i].classList.contains(className) &&
-          children[i].tagName === tagName &&
-          children[i].querySelector(`.${childClassName}`)
-        ) {
-          result.push(
-            children[i].querySelector(`.${childClassName}`) as HTMLElement
-          );
-        }
-      } else if (
-        children[i].tagName === tagName &&
-        children[i].querySelector(`.${childClassName}`)
-      ) {
-        result.push(
-          children[i].querySelector(`.${childClassName}`) as HTMLElement
-        );
-      }
-    }
-
-    return result;
-  };
-
-  private getArrayFromUL = (list: HTMLCollection, className: string) => {
-    let result: HTMLElement[] = [];
-
-    for (let i = 0; i < list.length; i++) {
-      if (className && list[i].classList.contains(className)) {
-        result.push(list[i] as HTMLElement);
-      } else if (list[i].querySelector(`.${className}`)) {
-        result.push(list[i].querySelector(`.${className}`) as HTMLElement);
-      }
-    }
-
-    return result;
-  };
-
-  private getListOfElements = (element: HTMLElement) => {
-    let parent = element.parentElement;
-    let prevParent = element;
-    let i = 0;
-    let posssibleList: HTMLElement[];
-
-    while (i < this.parentNestings) {
-      if (parent && parent.tagName === "UL") {
-        return this.getArrayFromUL(parent.children, element.classList[0]);
-      } else if (parent) {
-        posssibleList = this.getPossibleList(
-          parent,
-          element.classList[0],
-          prevParent.classList[0],
-          prevParent.tagName
-        );
-
-        if (posssibleList.length > 1) {
-          return posssibleList;
-        }
-      }
-
-      if (parent && parent.parentElement) {
-        prevParent = parent;
-        parent = parent.parentElement;
-      }
-      i++;
-    }
-
-    return null;
-  };
-
-  private unHighlightElements(list: HTMLCollection | HTMLElement[]) {
-    for (let i = 0; i < list.length; i++) {
-      list[i].classList.remove("highlighted");
-    }
+  private addEventListeners() {
+    document.addEventListener('mouseover', this.mouseOverListener);
+    document.addEventListener('mousedown', this.mouseDownListener);
+    document.addEventListener('click', this.clickListener, true);
   }
 
-  private highlightList(list: HTMLCollection | HTMLElement[]) {
-    for (let i = 0; i < list.length; i++) {
-      list[i].classList.add("highlighted");
-    }
+  private removeEventListeners() {
+    document.removeEventListener('mouseover', this.mouseOverListener);
+    document.removeEventListener('mousedown', this.mouseDownListener);
+    document.removeEventListener('click', this.clickListener, true);
   }
 
   private mouseOverListener = (event: MouseEvent) => {
     let element = event.target as HTMLElement;
-    if (element.closest("automation")) return;
+    if (element.closest('automation')) return;
 
-    let children = this.getListOfElements(element);
+    let children = this.automationService.getListOfElementsForLoop(element);
 
-    this.unHighlightElements(this.highlightedElements);
+    this.automationService.removeClassNameFromList(
+      this.highlightedElements,
+      this.highlightedClassName
+    );
 
     if (children) {
       this.highlightedElements = children;
-      this.highlightList(children);
+      this.automationService.addClassNameToList(
+        children,
+        this.highlightedClassName
+      );
     }
+  };
+
+  private mouseDownListener = (event: MouseEvent) => {
+    event.preventDefault();
   };
 
   private clickListener = (event: MouseEvent) => {
     let element = event.target as HTMLElement;
     if (
-      element.closest("automation") ||
+      element.closest('automation') ||
       !this.highlightedElements ||
-      !("length" in this.highlightedElements)
+      !('length' in this.highlightedElements)
     )
       return;
 
@@ -142,46 +65,54 @@ export class AutomationForLoopComponent implements AfterViewInit {
 
     for (let i = 0; i < this.highlightedElements.length; i++) {
       if (this.highlightedElements[i].contains(element)) {
-        this.highlightedElements[i].classList.add("clicked");
+        this.highlightedElements[i].classList.add('automation-block-clicked');
         this.clickedElements.push(this.highlightedElements[i]);
-        document.removeEventListener("mouseover", this.mouseOverListener);
+        document.removeEventListener('mouseover', this.mouseOverListener);
         break;
       }
     }
 
     if (this.clickedElements.length > 1) {
-      document.removeEventListener("click", this.clickListener, true);
+      document.removeEventListener('click', this.clickListener, true);
+      document.removeEventListener('mousedown', this.mouseDownListener);
     }
   };
 
   reset() {
-    this.unHighlightElements(this.highlightedElements);
+    this.automationService.removeClassNameFromList(
+      this.highlightedElements,
+      this.highlightedClassName
+    );
     this.highlightedElements = [];
 
-    for (let i = 0; i < this.clickedElements.length; i++) {
-      this.clickedElements[i].classList.remove("clicked");
-    }
-
+    this.automationService.removeClassNameFromList(
+      this.clickedElements,
+      this.clickedClassName
+    );
     this.clickedElements = [];
-    document.addEventListener("mouseover", this.mouseOverListener);
+    this.addEventListeners();
   }
 
   save() {
     this.onSaveItems.emit(this.highlightedElements);
     for (let i = 0; i < this.highlightedElements.length; i++) {
-      this.highlightedElements[i].classList.remove("highlighted");
-      if (!this.highlightedElements[i].classList.contains("clicked"))
-        this.highlightedElements[i].classList.add("clicked");
+      this.highlightedElements[i].classList.remove(
+        'automation-block-highlighted'
+      );
+      if (
+        !this.highlightedElements[i].classList.contains(
+          'automation-block-clicked'
+        )
+      )
+        this.highlightedElements[i].classList.add('automation-block-clicked');
     }
   }
 
   ngAfterViewInit() {
-    document.addEventListener("mouseover", this.mouseOverListener);
-    document.addEventListener("click", this.clickListener, true);
+    this.addEventListeners();
   }
 
   ngOnDestroy() {
-    document.removeEventListener("mouseover", this.mouseOverListener);
-    document.removeEventListener("click", this.clickListener, true);
+    this.removeEventListeners();
   }
 }

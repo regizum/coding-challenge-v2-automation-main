@@ -2,7 +2,10 @@
   Step 2. Choose a child-action on each loop element
 </h3>
 <div class="d-flex">
-  <div class="card text-center" (click)="onChooseAnAction.emit('button')">
+  <div
+    class="card text-center automation-action"
+    (click)="onChooseAnAction.emit('button')"
+  >
     <div class="card-body">
       <i class="fa fa-3x fa-arrow-pointer text-warning"></i>
       <h5 class="card-title mt-3">Click a button</h5>
@@ -13,7 +16,10 @@
       </p>
     </div>
   </div>
-  <div class="card ms-4 text-center" (click)="onChooseAnAction.emit('input')">
+  <div
+    class="card ms-4 text-center automation-action"
+    (click)="onChooseAnAction.emit('input')"
+  >
     <div class="card-body">
       <i class="fa fa-3x fa-i-cursor text-info"></i>
       <h5 class="card-title mt-3">Input text</h5>

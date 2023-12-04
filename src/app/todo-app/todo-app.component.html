@@ -74,9 +74,13 @@
             class="ms-1"
             [ngClass]="{ 'text-decoration-line-through': task.completed }"
             (click)="task.completed = !task.completed"
-            >{{ task.title }}, completed: {{ task.completed }}</span
+            >{{ task.title }}</span
           >
-          <a class="text-danger ms-auto" href="#" (click)="deleteTask(task)">
+          <a
+            class="text-danger ms-auto"
+            href="#"
+            (click)="$event.preventDefault(); deleteTask(task)"
+          >
             <i class="fa fa-times"></i>
           </a>
         </li>

@@ -7,6 +7,8 @@ import { AutomationForLoopComponent } from "./automation-for-loop/automation-for
 import { AutomationActionsComponent } from "./automation-actions/automation-actions.component";
 import { AutomationActionsButtonComponent } from "./automation-actions-button/automation-actions-button.component";
 import { AutomationActionsInputComponent } from "./automation-actions-input/automation-actions-input.component";
+import { AutomationService } from "./automation.service";
+
 
 @NgModule({
   declarations: [
@@ -17,7 +19,7 @@ import { AutomationActionsInputComponent } from "./automation-actions-input/auto
     AutomationActionsInputComponent,
   ],
   imports: [BrowserModule, FormsModule],
-  providers: [],
+  providers: [AutomationService],
   exports: [AutomationComponent],
   bootstrap: [AutomationComponent],
 })
