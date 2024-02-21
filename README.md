@@ -1,6 +1,9 @@
 # Coding Challenge V2
 ### This is a coding challenge for a job interview
 
+## 0. Demo
+<a href="https://regizum.github.io/coding-challenge-v2-automation-main/">Demo</a>
+
 ## 1. Usage
 
 ### 1.1. Installation
